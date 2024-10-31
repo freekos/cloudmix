@@ -1,0 +1,2 @@
+npm pre-commit
+npm test

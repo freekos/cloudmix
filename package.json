@@ -1,44 +1,71 @@
 {
-	"name": "cloudmix",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
-	},
-	"dependencies": {
-		"@aws-sdk/client-apigatewaymanagementapi": "^3.679.0",
-		"@aws-sdk/client-dynamodb": "^3.679.0",
-		"@aws-sdk/lib-dynamodb": "^3.679.0",
-		"@aws-sdk/util-dynamodb": "^3.679.0",
-		"@prisma/client": "^5.21.1",
-		"aws-sdk": "^2.1691.0",
-		"axios": "^1.7.7",
-		"bcrypt": "^5.1.1",
-		"cohere-ai": "^7.14.0",
-		"ioredis": "^5.4.1",
-		"jsonwebtoken": "^9.0.2",
-		"next": "15.0.0",
-		"next-auth": "^4.24.8",
-		"openai": "^4.68.4",
-		"prisma": "^5.21.1",
-		"react": "19.0.0-rc-65a56d0e-20241020",
-		"react-dom": "19.0.0-rc-65a56d0e-20241020",
-		"redis": "^4.7.0",
-		"ws": "^8.18.0",
-		"zod": "^3.23.8"
-	},
-	"devDependencies": {
-		"@types/bcrypt": "^5.0.2",
-		"@types/jsonwebtoken": "^9.0.7",
-		"@types/node": "^20",
-		"@types/react": "^18",
-		"@types/react-dom": "^18",
-		"@types/ws": "^8.5.12",
-		"eslint": "^8",
-		"eslint-config-next": "15.0.0",
-		"typescript": "^5"
-	}
+  "name": "cloudmix",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "eslint": "eslint \"**/*.+(js|jsx|ts|tsx)\"",
+    "eslint:fix": "eslint --fix \"**/*.+(js|jsx|ts|tsx)\"",
+    "prettier": "prettier --check \"**/*.+(js|jsx|ts|tsx|json|yml|yaml|md|css)\"",
+    "prettier:fix": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|yml|yaml|md|css)\"",
+    "prepare": "husky",
+    "pre-commit": "lint-staged"
+  },
+  "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.679.0",
+    "@aws-sdk/client-dynamodb": "^3.679.0",
+    "@aws-sdk/lib-dynamodb": "^3.679.0",
+    "@aws-sdk/util-dynamodb": "^3.679.0",
+    "@mantine/core": "^7.13.4",
+    "@mantine/hooks": "^7.13.4",
+    "@prisma/client": "^5.21.1",
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "cohere-ai": "^7.14.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "next": "15.0.0",
+    "next-auth": "^4.24.8",
+    "openai": "^4.68.4",
+    "prisma": "^5.21.1",
+    "react": "19.0.0-rc-65a56d0e-20241020",
+    "react-dom": "19.0.0-rc-65a56d0e-20241020",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/ws": "^8.5.12",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-next": "15.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "3.3.3",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "./*/**/*.{js,jsx,ts,tsx}": [
+      "npm run prettier:fix",
+      "npm run eslint:fix"
+    ],
+    "*.{json,md}": [
+      "npm run prettier:fix"
+    ]
+  }
 }
