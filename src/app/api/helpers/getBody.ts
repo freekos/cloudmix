@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export async function getBody(stream: any) {
   const chunks = [];
   for await (const chunk of stream) {

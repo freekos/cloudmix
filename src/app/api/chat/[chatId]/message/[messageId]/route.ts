@@ -1,12 +1,12 @@
+import { NextResponse } from 'next/server';
 import { authorizeRequest } from '@/app/api/auth/service';
 import { getBody } from '@/app/api/helpers/getBody';
 import { RequestError } from '@/app/api/helpers/requestError';
 import { requestHandler } from '@/app/api/helpers/requestHandler';
 import { prisma } from '@/app/api/lib/prisma';
-import { NextResponse } from 'next/server';
 import { updateMessageDto } from './dto';
 
-const PATCH = requestHandler(async function (req, data) {
+const PATCH = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const body = await getBody(req.body);
@@ -20,7 +20,7 @@ const PATCH = requestHandler(async function (req, data) {
   const message = await prisma.message.findUnique({
     where: {
       id: messageId,
-      chatId: chatId,
+      chatId,
       senderId: sessionUser.id,
     },
   });
@@ -31,7 +31,7 @@ const PATCH = requestHandler(async function (req, data) {
   await prisma.message.update({
     where: {
       id: messageId,
-      chatId: chatId,
+      chatId,
       senderId: sessionUser.id,
     },
     data: {
@@ -42,7 +42,7 @@ const PATCH = requestHandler(async function (req, data) {
   return NextResponse.json(null, { status: 200 });
 });
 
-const DELETE = requestHandler(async function (req, data) {
+const DELETE = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;
@@ -52,7 +52,7 @@ const DELETE = requestHandler(async function (req, data) {
   const message = await prisma.message.findUnique({
     where: {
       id: messageId,
-      chatId: chatId,
+      chatId,
       senderId: sessionUser.id,
     },
   });
@@ -63,7 +63,7 @@ const DELETE = requestHandler(async function (req, data) {
   await prisma.message.delete({
     where: {
       id: messageId,
-      chatId: chatId,
+      chatId,
       senderId: sessionUser.id,
     },
   });

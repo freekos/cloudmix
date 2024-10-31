@@ -1,0 +1,3 @@
+class BotApi {
+  path = '/bot';
+}

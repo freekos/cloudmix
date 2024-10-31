@@ -1,0 +1,18 @@
+@import '@/styles/vars.scss';
+
+.next_link {
+  text-decoration: none;
+  color: $primary-color;
+  transition: color 0.3s ease-in-out;
+
+  &:hover {
+    color: darken($primary-color, 5%);
+  }
+  &:active {
+    color: darken($primary-color, 10%);
+  }
+  &:disabled {
+    color: rgba($black, 0.1);
+    cursor: not-allowed;
+  }
+}

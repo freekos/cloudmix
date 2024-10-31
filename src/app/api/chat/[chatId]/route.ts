@@ -4,7 +4,7 @@ import { RequestError } from '../../helpers/requestError';
 import { requestHandler } from '../../helpers/requestHandler';
 import { prisma } from '../../lib/prisma';
 
-const DELETE = requestHandler(async function (req, data) {
+const DELETE = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;
@@ -33,7 +33,7 @@ const DELETE = requestHandler(async function (req, data) {
   return NextResponse.json(null, { status: 200 });
 });
 
-const GET = requestHandler(async function (req, data) {
+const GET = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;

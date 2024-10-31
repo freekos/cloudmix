@@ -1,0 +1,128 @@
+@import '@/styles/vars';
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - $main-header-height);
+  height: calc(100% - $main-header-height);
+  background: $white;
+  transition: width 0.1s linear;
+  position: fixed;
+  top: $main-header-height;
+  left: 0;
+  z-index: $chat-sidebar-index;
+  transform: translateY(calc(-100% - $main-header-height));
+  transition: transform 0.3s ease-in-out;
+  overflow-y: scroll;
+
+  &[data-visible='true'] {
+    transform: translateY(0);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    background: $white;
+  }
+  .header > .left {
+    width: 0%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    transition: width 0.3s ease-in-out;
+    &[data-visible='true'] {
+      width: 50px;
+      margin-right: 10px;
+    }
+  }
+  .header > .left > .back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    color: $black;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    &:hover {
+      background: rgba($black, 0.1);
+    }
+    &:active {
+      background: rgba($black, 0.2);
+    }
+  }
+  .header > .left > .back > .icon {
+    width: 20px;
+    height: 20px;
+    color: $black;
+  }
+  .header > .search {
+    width: 100%;
+  }
+  .search_input {
+    border-radius: 7px !important;
+    &:focus {
+      border-width: 2px !important;
+    }
+  }
+  .search_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .content > .messages {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 90px;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 28px;
+    color: #180a29;
+    background: #fbfbfb;
+    border-bottom: 1px solid rgba($gray, 0.5);
+    @include container;
+  }
+  .content > .wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .content > .wrapper > .list {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (min-width: 500px) {
+  .sidebar {
+    width: 375px;
+    height: 100%;
+    position: unset;
+    transform: translateY(0);
+  }
+}
+@media (min-width: 1133px) {
+  .sidebar {
+    width: 510px;
+    height: 100%;
+    position: unset;
+    transform: translateY(0);
+  }
+}

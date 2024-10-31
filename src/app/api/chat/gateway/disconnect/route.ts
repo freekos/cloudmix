@@ -5,7 +5,7 @@ import { requestHandler } from '@/app/api/helpers/requestHandler';
 import { redis } from '@/app/api/lib/redis';
 import { disconnectDto } from './dto';
 
-const POST = requestHandler(async function (req) {
+const POST = requestHandler(async (req) => {
   const body = await getBody(req.body);
   const dto = await disconnectDto.parseAsync(body);
   console.log(dto, '[CHAT]: Websocket disconnected');

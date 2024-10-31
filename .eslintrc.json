@@ -1,12 +1,14 @@
 {
+  "parser": "@typescript-eslint/parser",
   "extends": [
-    "plugin:react/recommended",
+    // "plugin:react/recommended",
     "plugin:@next/next/recommended",
-    "airbnb",
+    // "airbnb",
     "prettier"
   ],
   "plugins": ["react", "prettier"],
   "parserOptions": {
     "project": "./tsconfig.json"
-  }
+  },
+  "ignorePatterns": ["coverage/"]
 }

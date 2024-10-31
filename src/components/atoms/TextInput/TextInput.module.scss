@@ -1,0 +1,9 @@
+@import '@/styles/vars.scss';
+
+.text_input {
+  &_input {
+    height: 45px !important;
+    background: $white !important;
+    border-radius: 10px !important;
+  }
+}

@@ -10,7 +10,7 @@ import { prisma } from '../../lib/prisma';
 import { redis } from '../../lib/redis';
 import { defaultDto } from './dto';
 
-const POST = requestHandler(async function (req) {
+const POST = requestHandler(async (req) => {
   const body = await getBody(req.body);
   const dto = await defaultDto.parseAsync(body);
   console.log(dto, 'CHAT');
@@ -28,7 +28,7 @@ const POST = requestHandler(async function (req) {
       break;
     }
     case 'joinChat': {
-      const chatId = dto.payload.chatId;
+      const { chatId } = dto.payload;
       await redis.set(`userInChat:${userId}`, chatId);
 
       const chat = await prisma.chat.findUnique({
@@ -58,7 +58,7 @@ const POST = requestHandler(async function (req) {
       break;
     }
     case 'leaveChat': {
-      const chatId = dto.payload.chatId;
+      const { chatId } = dto.payload;
       await redis.del(`userInChat:${userId}`);
 
       const chat = await prisma.chat.findUnique({
@@ -88,8 +88,8 @@ const POST = requestHandler(async function (req) {
       break;
     }
     case 'sendMessage': {
-      const chatId = dto.payload.chatId;
-      const message = dto.payload.message;
+      const { chatId } = dto.payload;
+      const { message } = dto.payload;
       const senderId = sessionUser.id;
       const chat = await prisma.chat.findUnique({
         where: { id: chatId },
@@ -104,7 +104,7 @@ const POST = requestHandler(async function (req) {
       const newMessage = await prisma.message.create({
         data: {
           chatId: chat.id,
-          senderId: senderId,
+          senderId,
           content: message,
         },
       });
@@ -112,9 +112,7 @@ const POST = requestHandler(async function (req) {
       const receiverConnectionIds = await Promise.all(
         chat.users
           .filter((user) => user.id !== senderId)
-          .map((user) => {
-            return redis.get(`connectionUser:${user.id}`);
-          }),
+          .map((user) => redis.get(`connectionUser:${user.id}`)),
       );
 
       receiverConnectionIds.forEach(async (receiverConnectionId) => {
@@ -132,8 +130,8 @@ const POST = requestHandler(async function (req) {
       break;
     }
     case 'typing': {
-      const chatId = dto.payload.chatId;
-      const status = dto.payload.status;
+      const { chatId } = dto.payload;
+      const { status } = dto.payload;
     }
   }
 

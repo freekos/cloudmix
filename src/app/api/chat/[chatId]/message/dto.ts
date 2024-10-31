@@ -1,5 +1,5 @@
-import { OrderBy } from '@/app/api/constants/orderBy';
 import { z } from 'zod';
+import { OrderBy } from '@/app/api/constants/orderBy';
 
 export const getMessagesDto = z.object({
   page: z.number(),

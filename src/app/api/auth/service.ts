@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { NextRequest, NextResponse, userAgent } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { env } from '../configs/env';
 import { getHashedPassword } from '../helpers/getHashedPassword';
 import { RequestError } from '../helpers/requestError';
@@ -33,7 +33,7 @@ export async function register(dto: RegisterDto) {
   return NextResponse.json(null, { status: 201 });
 }
 
-export async function login(req: NextRequest, dto: LoginDto) {
+export async function login(userAgent: any, dto: LoginDto) {
   const user = await prisma.user.findUnique({
     where: {
       username: dto.username,
@@ -48,7 +48,7 @@ export async function login(req: NextRequest, dto: LoginDto) {
     throw new RequestError('Invalid password', 400);
   }
 
-  const { refreshToken, accessToken } = await createSession(req, user.id);
+  const { refreshToken, accessToken } = await createSession(userAgent, user.id);
 
   return NextResponse.json(
     { refreshToken, accessToken, user },
@@ -117,15 +117,14 @@ export async function authorizeByToken(token: string) {
   return { sessionUser, token };
 }
 
-async function createSession(req: NextRequest, userId: number) {
+async function createSession(userAgent: any, userId: number) {
   const session = await getSession(userId);
   if (session) {
     await deleteSession(userId);
   }
 
   const { accessToken, refreshToken } = generateTokens(userId);
-  const { device, os, browser } = userAgent(req);
-  console.log(device, os, browser, 'Agent');
+  const { device, os, browser } = userAgent;
 
   await redis.set(
     getSessionAccessKey(userId),

@@ -1,0 +1,26 @@
+@import '@/styles/vars.scss';
+
+.button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  border-radius: 10px;
+  background: $primary-color !important;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  color: $white !important;
+  transition: background 0.3s ease-in-out;
+
+  &:hover {
+    background: darken($primary-color, 5%) !important;
+  }
+  &:active {
+    background: darken($primary-color, 10%) !important;
+  }
+  &:disabled {
+    background: rgba($primary-color, 0.5) !important;
+    cursor: not-allowed;
+  }
+}

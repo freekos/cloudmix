@@ -1,0 +1,12 @@
+@import '@/styles/vars';
+
+.divider {
+  width: 100% !important;
+
+  &_label {
+    &:after,
+    &:before {
+      background: $gray !important;
+    }
+  }
+}

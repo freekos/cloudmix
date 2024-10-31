@@ -27,14 +27,14 @@ const POST = requestHandler(async function (req) {
 
 const GET = requestHandler(async function (req) {
   const { sessionUser } = await authorizeRequest(req);
-  const page = req.nextUrl.searchParams.get('page') ?? '1';
-  const limit = req.nextUrl.searchParams.get('limit') ?? '10';
+  // const page = req.nextUrl.searchParams.get('page') ?? '1';
+  // const limit = req.nextUrl.searchParams.get('limit') ?? '10';
   const search = req.nextUrl.searchParams.get('search') ?? undefined;
   const isGroup = req.nextUrl.searchParams.get('isGroup') ?? undefined;
   const orderBy = req.nextUrl.searchParams.get('orderBy') ?? undefined;
   const params = {
-    page: parseInt(page),
-    limit: parseInt(limit),
+    // page: parseInt(page),
+    // limit: parseInt(limit),
     search,
     isGroup,
     orderBy,
@@ -43,29 +43,22 @@ const GET = requestHandler(async function (req) {
 
   const dto = await getChatsDto.parseAsync(params);
 
-  const searchCondition = dto.search
-    ? {
-        name: {
-          contains: dto.search,
-          mode: 'insensitive',
-        },
-      }
-    : {};
-
-  // const chatTypeCondition =
-  // 	typeof dto.isGroup === 'boolean' ? { isGroup: dto.isGroup } : {}
-
   const chats = await prisma.chat.findMany({
     where: {
       users: {
         some: { id: sessionUser.id },
       },
-      // ...searchCondition,
-      // ...chatTypeCondition,
+      ...(dto.isGroup !== undefined && { isGroup: dto.isGroup }),
+      ...(dto.search && {
+        name: {
+          contains: dto.search,
+          mode: 'insensitive',
+        },
+      }),
     },
-    take: dto.limit,
-    skip: dto.limit * (dto.page - 1),
-    orderBy: { createdAt: dto.orderBy || 'desc' },
+    // take: dto.limit,
+    // skip: dto.limit * (dto.page - 1),
+    orderBy: { createdAt: dto.orderBy },
     include: {
       users: true,
     },

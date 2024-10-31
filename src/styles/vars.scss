@@ -1,0 +1,17 @@
+$main-header-height: 92px;
+
+$main-header-index: 20;
+$chat-sidebar-index: 10;
+
+$primary-color: #9969ff;
+$white: #ffffff;
+$black: #000000;
+$gray: #9aacb5;
+
+@mixin container {
+  padding-inline: 24px;
+
+  @media (min-width: 500px) {
+    padding-inline: 40px;
+  }
+}

@@ -6,7 +6,7 @@ import { requestHandler } from '../helpers/requestHandler';
 import { botDto } from './dto';
 import { coherePrompt, openaiPrompt } from './service';
 
-const POST = requestHandler(async function (req) {
+const POST = requestHandler(async (req) => {
   await authorizeRequest(req);
   const body = await getBody(req.body);
   const dto = await botDto.parseAsync(body);

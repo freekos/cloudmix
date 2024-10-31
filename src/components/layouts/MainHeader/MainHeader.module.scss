@@ -1,0 +1,38 @@
+@import '@/styles/vars';
+
+.main_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: $main-header-height;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $main-header-index;
+  background: $white;
+  border-bottom: 1px solid rgba($gray, 0.5);
+  @include container;
+
+  .logo {
+    max-width: 146px;
+    width: 100%;
+  }
+  .right {
+    display: flex;
+    flex-direction: column;
+  }
+  .right > .username {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    color: rgb(24, 10, 41);
+  }
+  .right > .logout {
+    font-size: 16px;
+    line-height: 28px;
+    color: rgb(24, 10, 41, 0.5);
+    cursor: pointer;
+  }
+}
