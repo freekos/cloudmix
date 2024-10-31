@@ -12,7 +12,7 @@
     "prettier": "prettier --check \"**/*.+(js|jsx|ts|tsx|json|yml|yaml|md|css)\"",
     "prettier:fix": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|yml|yaml|md|css)\"",
     "prepare": "husky",
-    "pre-commit": "lint-staged"
+    "staged": "lint-staged"
   },
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "^3.679.0",
