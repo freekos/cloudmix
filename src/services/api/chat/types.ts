@@ -1,9 +1,10 @@
+import { MessageStatus } from '@/constants/messageStatus';
 import { OrderBy } from '@/constants/orderBy';
 
 export interface CreateChatDto {
   name?: string;
   isGroup?: boolean;
-  usersIds: number[];
+  usersIds: string[];
 }
 
 export interface GetChatsDto {
@@ -20,4 +21,10 @@ export interface UpdateMessageDto {
 
 export interface GetUsersDto {
   search?: string;
+}
+
+export interface GetChatsMessagesDto {
+  search?: string;
+  status?: MessageStatus;
+  orderBy?: OrderBy;
 }

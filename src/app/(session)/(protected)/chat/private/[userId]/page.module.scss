@@ -1,0 +1,27 @@
+@import '@/styles/vars';
+
+.chat_private_page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .loader {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 28px;
+    color: $gray;
+    text-decoration: underline;
+  }
+}

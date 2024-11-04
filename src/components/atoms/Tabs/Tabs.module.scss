@@ -1,0 +1,24 @@
+@import '@/styles/vars.scss';
+
+.tabs {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+
+  &_list {
+  }
+  &_tab {
+    padding: 12px 20px !important;
+    &:hover {
+      background: rgba($black, 0.1);
+    }
+    &:active {
+      background: rgba($black, 0.2);
+    }
+  }
+  &_panel {
+    flex: 1 !important;
+    display: flex;
+    flex-direction: column;
+  }
+}

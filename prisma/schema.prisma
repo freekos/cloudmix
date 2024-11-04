@@ -13,8 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MessageStatus {
+  sent
+  delivered
+  read
+}
+
 model User {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -22,11 +28,11 @@ model User {
   password String
   chats Chat[] @relation("UserChats")
   messages Message[] @relation("UserMessages")
-  readReceipts ReadReceipt[]
+  receipts MessageReceipt[]
 }
 
 model Chat {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid()) 
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -37,27 +43,29 @@ model Chat {
 }
 
 model Message {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
 
   content String
-  senderId Int
-  chatId Int
-  replyToId Int?
+  senderId String
+  chatId String
+  replyToId String?
   sender User @relation("UserMessages", fields: [senderId], references: [id])
   chat Chat @relation("ChatMessages", fields: [chatId], references: [id])
   replyTo Message? @relation("MessageReplies", fields: [replyToId], references: [id])
   replies Message[] @relation("MessageReplies")
-  readReceipts  ReadReceipt[]
+  receipts  MessageReceipt[]
 }
 
-model ReadReceipt {
-  id Int @id @default(autoincrement())
-  messageId Int
-  userId Int
-  readAt DateTime @default(now())
+model MessageReceipt {
+  id String @id @default(uuid())
+  messageId String
+  userId String
+  timestamp DateTime @default(now())
+  status MessageStatus @default(sent)
 
   message Message @relation(fields: [messageId], references: [id])
   user User @relation(fields: [userId], references: [id])
+  @@unique([messageId, userId])
 }

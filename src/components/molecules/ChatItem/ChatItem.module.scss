@@ -6,6 +6,7 @@
   width: 100%;
   height: 94px;
   padding-block: 19px;
+  border-bottom: 1px solid rgba($gray, 0.5);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   @include container;
@@ -17,7 +18,6 @@
     background: rgba($gray, 0.2);
   }
 
-  border-bottom: 1px solid rgba($gray, 0.5);
   &[data-active='true'] {
     background: rgba($gray, 0.1);
   }
@@ -32,15 +32,16 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
+    gap: 10px;
     width: 100%;
   }
-  .top > .sender {
+  .top > .username {
     font-size: 18px;
     font-weight: 500;
     line-height: 28px;
     color: rgb(24, 10, 41);
   }
-  .top > .new_message_count {
+  .top > .messages_count {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,6 +57,9 @@
     font-size: 16px;
     line-height: 28px;
     color: rgb(24, 10, 41, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .bottom > .time {
     font-size: 16px;

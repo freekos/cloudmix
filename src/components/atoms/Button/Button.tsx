@@ -1,4 +1,5 @@
 'use client';
+
 import { UnstyledButton } from '@mantine/core';
 import clsx from 'clsx';
 import { ComponentPropsWithRef, forwardRef } from 'react';
@@ -19,7 +20,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading ? <Loader size="sm" /> : <>{children}</>}
+        {loading ? <Loader size="sm" data-testid="loader" /> : <>{children}</>}
       </UnstyledButton>
     );
   },

@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '../configs/env';
 import { getHashedPassword } from '../helpers/getHashedPassword';
@@ -61,7 +61,7 @@ export async function refreshTokens(req: NextRequest, dto: RefreshTokenDto) {
   if (!decodedToken.sub) {
     throw new RequestError('Token is not valid', 400);
   }
-  const userId = parseInt(decodedToken.sub as string);
+  const userId = decodedToken.sub as string;
 
   const sessionRefreshToken = await redis.get(getSessionRefreshKey(userId));
   if (sessionRefreshToken !== dto.refreshToken) {
@@ -90,15 +90,22 @@ export async function authorizeRequest(req: NextRequest) {
 
   const token = authHeader.split(' ')[1];
 
-  return authorizeByToken(token);
+  return await authorizeByToken(token);
 }
 
 export async function authorizeByToken(token: string) {
-  const decodedToken = jwt.verify(token, env.JWT_SECRET);
+  let decodedToken: JwtPayload | string;
+
+  try {
+    decodedToken = jwt.verify(token, env.JWT_SECRET);
+  } catch {
+    throw new RequestError('Invalid or expired token', 403);
+  }
+
   if (!decodedToken.sub) {
     throw new RequestError('Invalid or expired token', 403);
   }
-  const userId = parseInt(decodedToken.sub as string);
+  const userId = decodedToken.sub as string;
 
   const sessionAccessToken = await redis.get(getSessionAccessKey(userId));
   if (sessionAccessToken !== token) {
@@ -117,7 +124,7 @@ export async function authorizeByToken(token: string) {
   return { sessionUser, token };
 }
 
-async function createSession(userAgent: any, userId: number) {
+async function createSession(userAgent: any, userId: string) {
   const session = await getSession(userId);
   if (session) {
     await deleteSession(userId);
@@ -147,13 +154,13 @@ async function createSession(userAgent: any, userId: number) {
   return { refreshToken, accessToken };
 }
 
-async function deleteSession(userId: number) {
+async function deleteSession(userId: string) {
   await redis.del(getSessionAccessKey(userId));
   await redis.del(getSessionRefreshKey(userId));
   await redis.del(getSessionMetaKey(userId));
 }
 
-async function getSession(userId: number) {
+async function getSession(userId: string) {
   const accessToken = await redis.get(getSessionAccessKey(userId));
   const refreshToken = await redis.get(getSessionRefreshKey(userId));
   const meta = await redis.hgetall(getSessionMetaKey(userId));
@@ -161,7 +168,7 @@ async function getSession(userId: number) {
   return { accessToken, refreshToken, meta };
 }
 
-function generateTokens(userId: number) {
+function generateTokens(userId: string) {
   const jwtSecret = env.JWT_SECRET;
   const payload = { sub: userId };
   const accessToken = jwt.sign(payload, jwtSecret, {
@@ -174,14 +181,14 @@ function generateTokens(userId: number) {
   return { accessToken, refreshToken };
 }
 
-function getSessionRefreshKey(userId: number) {
+function getSessionRefreshKey(userId: string) {
   return `session:refresh:${userId}`;
 }
 
-function getSessionAccessKey(userId: number) {
+function getSessionAccessKey(userId: string) {
   return `session:access:${userId}`;
 }
 
-function getSessionMetaKey(userId: number) {
+function getSessionMetaKey(userId: string) {
   return `session:meta:${userId}`;
 }

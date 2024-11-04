@@ -4,7 +4,7 @@ import { OrderBy } from '../constants/orderBy';
 export const createChatDto = z.object({
   isGroup: z.boolean().optional(),
   name: z.string().optional(),
-  usersIds: z.array(z.number()),
+  usersIds: z.array(z.string()),
 });
 
 export const getChatsDto = z.object({

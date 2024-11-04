@@ -1,104 +1,131 @@
 'use client';
 
-import { TextInput } from '@/components/atoms/TextInput';
-import { ChatItem } from '@/components/molecules/ChatItem';
-import { useChatsQuery } from '@/hooks/useChatsQuery';
-import { useUsersQuery } from '@/hooks/useUsersQuery';
+import { Tabs } from '@/components/atoms/Tabs';
+import { useMessages } from '@/providers/MesagesProvider';
 import {
-  ArrowLeftIcon,
-  MagnifyingGlassIcon,
+  ChatBubbleBottomCenterIcon,
+  CloudIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
-import { Loader } from '@mantine/core';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Badge } from '@mantine/core';
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 import styles from './ChatSidebar.module.scss';
+import { BotsPanel } from './components/BotsPanel';
+import { ChatsPanel } from './components/ChatsPanel';
+import { UsersPanel } from './components/UsersPanel';
+
+enum ChatSidebarTabs {
+  Chats = 'chats',
+  Users = 'users',
+  Bots = 'bots',
+}
+
+function isChatSidebarTab(value: string | null) {
+  return Object.values(ChatSidebarTabs).includes(value as ChatSidebarTabs);
+}
 
 export const ChatSidebar = () => {
-  const [search, setSearch] = useState<string>('');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const chatsQuery = useChatsQuery({ search });
-  const usersQuery = useUsersQuery({ search });
+  const { unreadMessages } = useMessages();
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
 
-  const params = useParams();
   const chatId = params?.chatId;
+  const userId = params?.userId;
+  const tab = searchParams.get('tab');
+
+  const activeTab = useMemo(() => {
+    return isChatSidebarTab(tab)
+      ? (tab as ChatSidebarTabs)
+      : ChatSidebarTabs.Chats;
+  }, [tab]);
+
+  const unreadMessagesChatsCount = useMemo(() => {
+    const unreadChats = new Set();
+
+    unreadMessages.forEach((message) => {
+      unreadChats.add(message.chatId);
+    });
+
+    return unreadChats.size;
+  }, [unreadMessages]);
+
+  const handleTabChange = (value: string | null) => {
+    if (!value) {
+      return;
+    }
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('tab', value);
+    router.push(`${pathname}?${newSearchParams.toString()}`);
+  };
+
+  useEffect(() => {
+    if (!isChatSidebarTab(tab)) {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('tab', ChatSidebarTabs.Chats);
+      router.replace(`${pathname}?${newSearchParams.toString()}`);
+    }
+  }, [tab, pathname, router]);
 
   return (
-    <aside className={styles.sidebar} data-visible={!chatId}>
-      <div className={styles.header}>
-        <div className={styles.left} data-visible={isSearching}>
-          <button className={styles.back} onClick={() => setIsSearching(false)}>
-            <ArrowLeftIcon className={styles.icon} />
-          </button>
-        </div>
-        <TextInput
-          classNames={{
-            root: styles.search,
-            input: styles.search_input,
-          }}
-          placeholder="Search"
-          leftSection={
-            !isSearching ? (
-              <MagnifyingGlassIcon className={styles.search_icon} />
-            ) : null
-          }
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          onFocus={() => setIsSearching(true)}
-        />
-      </div>
-      <div className={styles.content}>
-        <div className={styles.messages}>
-          <span>Messages</span>
-          <span>(3)</span>
-        </div>
-        <div className={styles.wrapper}>
-          {chatsQuery.isLoading || usersQuery.isLoading ? (
-            <Loader size="lg" />
-          ) : (
-            <div className={styles.list}>
-              {chatsQuery.data?.map((chat) => (
-                <ChatItem
-                  key={chat.id}
-                  name={
-                    (chat.isGroup ? chat.name : chat.users[0].username) ??
-                    'Unknown'
-                  }
-                  newMessageCount={chat.messages.length}
-                  lastMessage={chat.messages[chat.messages.length - 1].content}
-                  lastMessageTime={
-                    chat.messages[chat.messages.length - 1].createdAt
-                  }
-                  isActive={chatId === chat.id}
-                  onClick={() => {
-                    if (chatId === chat.id) {
-                      router.push(`/chat`);
-                      return;
-                    }
-                    setIsSearching(false);
-                    router.push(`/chat/${chat.id}`);
-                  }}
-                />
-              ))}
-              {usersQuery.data?.map((user) => (
-                <ChatItem
-                  key={user.id}
-                  name={user.username}
-                  isActive={chatId === user.id}
-                  onClick={() => {
-                    if (chatId === user.id) {
-                      router.push(`/chat`);
-                      return;
-                    }
-                    setIsSearching(false);
-                    router.push(`/new-chat/${user.id}`);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+    <aside className={styles.sidebar} data-visible={!chatId && !userId}>
+      <Tabs value={activeTab} onChange={handleTabChange} keepMounted={false}>
+        <Tabs.List grow>
+          <Tabs.Tab
+            value={ChatSidebarTabs.Chats}
+            leftSection={
+              <ChatBubbleBottomCenterIcon
+                className={styles.chat_icon}
+                width={20}
+                height={20}
+              />
+            }
+            rightSection={
+              unreadMessagesChatsCount > 0 && (
+                <Badge className={styles.badge}>
+                  {unreadMessagesChatsCount}
+                </Badge>
+              )
+            }
+          >
+            Chats
+          </Tabs.Tab>
+          <Tabs.Tab
+            value={ChatSidebarTabs.Users}
+            leftSection={
+              <UserIcon className={styles.user_icon} width={20} height={20} />
+            }
+          >
+            Users
+          </Tabs.Tab>
+          <Tabs.Tab
+            value={ChatSidebarTabs.Bots}
+            leftSection={
+              <CloudIcon className={styles.bot_icon} width={20} height={20} />
+            }
+          >
+            Bots
+          </Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value={ChatSidebarTabs.Chats}>
+          <ChatsPanel />
+        </Tabs.Panel>
+        <Tabs.Panel value={ChatSidebarTabs.Users}>
+          <UsersPanel />
+        </Tabs.Panel>
+        <Tabs.Panel value={ChatSidebarTabs.Bots}>
+          <BotsPanel />
+        </Tabs.Panel>
+      </Tabs>
     </aside>
   );
 };

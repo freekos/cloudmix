@@ -4,79 +4,74 @@ import { PropsWithChildren } from 'react';
 import { Button, ButtonProps } from './Button';
 
 describe('Button', () => {
-  const getComponent = (props: ButtonProps = {}) => <Button {...props} />;
-
-  it('renders without crashing', () => {
-    render(getComponent(), {
+  const renderComponent = (props: ButtonProps = {}) => {
+    render(<Button {...props} />, {
       wrapper: ({ children }: PropsWithChildren) => {
         return <MantineClientProvider>{children}</MantineClientProvider>;
       },
     });
+  };
 
+  it('should render correctly', async () => {
+    renderComponent();
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
-  it('renders children', () => {
-    const children = 'Hello world';
-    render(getComponent({ children }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+  it('should render correctly with children', async () => {
+    renderComponent({
+      children: 'Hello, world!',
     });
 
-    expect(screen.getByText(children)).toBeInTheDocument();
+    expect(screen.getByText('Hello, world!')).toBeInTheDocument();
   });
 
-  it('renders with className', () => {
-    const className = 'test-class';
-    render(getComponent({ className }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+  it('should render correctly with className', async () => {
+    renderComponent({
+      className: 'test-class',
     });
 
-    expect(screen.getByRole('button')).toHaveClass(className);
+    expect(screen.getByRole('button')).toHaveClass('test-class');
   });
 
-  it('renders with type', () => {
-    const type = 'submit';
-    render(getComponent({ type }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+  it('should render correctly with type', async () => {
+    renderComponent({
+      type: 'submit',
     });
 
-    expect(screen.getByRole('button')).toHaveAttribute('type', type);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
   });
 
-  it('renders with disabled', () => {
-    const disabled = true;
-    render(getComponent({ disabled }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+  it('should render correctly with disabled is true', async () => {
+    renderComponent({
+      disabled: true,
     });
 
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('renders with loading', () => {
-    const loading = true;
-    render(getComponent({ loading }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+  it('should render correctly with loading is true', async () => {
+    renderComponent({
+      loading: true,
     });
 
-    expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
-  it('renders with click handler', () => {
+  it('should render correctly with loading is true and children', async () => {
+    renderComponent({
+      loading: true,
+      children: 'Hello, world!',
+    });
+
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
+    expect(screen.queryByText('Hello, world!')).toBeNull();
+  });
+
+  it('renders with click handler', async () => {
     const onClick = jest.fn();
-    render(getComponent({ onClick }), {
-      wrapper: ({ children }: PropsWithChildren) => {
-        return <MantineClientProvider>{children}</MantineClientProvider>;
-      },
+
+    renderComponent({
+      onClick,
     });
 
     const button = screen.getByRole('button');

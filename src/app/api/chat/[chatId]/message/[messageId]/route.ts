@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { authorizeRequest } from '@/app/api/auth/service';
 import { getBody } from '@/app/api/helpers/getBody';
 import { RequestError } from '@/app/api/helpers/requestError';
 import { requestHandler } from '@/app/api/helpers/requestHandler';
 import { prisma } from '@/app/api/lib/prisma';
+import { NextResponse } from 'next/server';
 import { updateMessageDto } from './dto';
 
 const PATCH = requestHandler(async (req, data) => {
@@ -13,8 +13,8 @@ const PATCH = requestHandler(async (req, data) => {
   const dto = await updateMessageDto.parseAsync(body);
 
   const params = await data.params;
-  const chatId = parseInt(params.chatId);
-  const messageId = parseInt(params.messageId);
+  const chatId = params.chatId;
+  const messageId = params.messageId;
   console.log(chatId, messageId);
 
   const message = await prisma.message.findUnique({
@@ -46,8 +46,8 @@ const DELETE = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;
-  const chatId = parseInt(params.chatId);
-  const messageId = parseInt(params.messageId);
+  const chatId = params.chatId;
+  const messageId = params.messageId;
 
   const message = await prisma.message.findUnique({
     where: {

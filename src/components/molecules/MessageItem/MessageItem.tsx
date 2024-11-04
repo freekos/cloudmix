@@ -1,33 +1,30 @@
-import clsx from 'clsx';
-import { ComponentProps } from 'react';
+import { MessageStatus } from '@/constants/messageStatus';
+import { getStatusText } from '@/helpers/getStatusText';
+import { format } from 'date-fns';
 import styles from './MessageItem.module.scss';
 
-interface MessageItemProps extends Omit<ComponentProps<'div'>, 'children'> {
+interface MessageItemProps {
+  isMine: boolean;
   content: string;
-  isOwn?: boolean;
-  isDelivered?: boolean;
+  createdAt: string;
+  status?: MessageStatus;
 }
 
 export const MessageItem = ({
-  className,
+  isMine,
   content,
-  isOwn,
-  isDelivered,
-  ...props
+  createdAt,
+  status,
 }: MessageItemProps) => {
+  const timeText = format(createdAt, 'HH:mm');
+
   return (
-    <div
-      className={clsx(styles.message_item, className)}
-      data-own={isOwn}
-      {...props}
-    >
+    <div className={styles.message_item} data-is-mine={isMine}>
       <span className={styles.content}>{content}</span>
       <div className={styles.meta}>
-        <span className={styles.time}>10:21</span>
-        {isOwn && (
-          <span className={styles.delivery}>
-            {isDelivered ? 'Delivered' : 'Delivery failed'}
-          </span>
+        <span className={styles.time}>{timeText}</span>
+        {isMine && (
+          <span className={styles.delivery}>{getStatusText(status)}</span>
         )}
       </div>
     </div>

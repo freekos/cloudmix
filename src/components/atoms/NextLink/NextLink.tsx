@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ComponentPropsWithoutRef } from 'react';
 import styles from './NextLink.module.scss';
 
-interface NextLinkProps extends ComponentPropsWithoutRef<typeof Link> {}
+export interface NextLinkProps extends ComponentPropsWithoutRef<typeof Link> {}
 
 export const NextLink = ({ children, className, ...props }: NextLinkProps) => {
   return (

@@ -3,7 +3,7 @@ import { ComponentPropsWithRef } from 'react';
 import { ControllerFieldState, UseFormStateReturn } from 'react-hook-form';
 import styles from './ErrorMessage.module.scss';
 
-interface ErrorMessageProps extends ComponentPropsWithRef<'p'> {}
+export interface ErrorMessageProps extends ComponentPropsWithRef<'p'> {}
 
 export const ErrorMessage = ({
   children,

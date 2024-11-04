@@ -1,0 +1,9 @@
+.search_input {
+  &:focus {
+    border-width: 2px !important;
+  }
+}
+.search_icon {
+  width: 20px;
+  height: 20px;
+}

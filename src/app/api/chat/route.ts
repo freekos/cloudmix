@@ -12,7 +12,7 @@ const POST = requestHandler(async function (req) {
   const dto = await createChatDto.parseAsync(body);
   console.log(dto, '[CHAT]: Create chat');
 
-  await prisma.chat.create({
+  const newChat = await prisma.chat.create({
     data: {
       isGroup: dto.isGroup,
       name: dto.name,
@@ -22,24 +22,20 @@ const POST = requestHandler(async function (req) {
     },
   });
 
-  return NextResponse.json(null, { status: 201 });
+  return NextResponse.json(newChat, { status: 201 });
 });
 
 const GET = requestHandler(async function (req) {
   const { sessionUser } = await authorizeRequest(req);
-  // const page = req.nextUrl.searchParams.get('page') ?? '1';
-  // const limit = req.nextUrl.searchParams.get('limit') ?? '10';
   const search = req.nextUrl.searchParams.get('search') ?? undefined;
   const isGroup = req.nextUrl.searchParams.get('isGroup') ?? undefined;
   const orderBy = req.nextUrl.searchParams.get('orderBy') ?? undefined;
+
   const params = {
-    // page: parseInt(page),
-    // limit: parseInt(limit),
     search,
     isGroup,
     orderBy,
   };
-  console.log(params);
 
   const dto = await getChatsDto.parseAsync(params);
 
@@ -56,11 +52,20 @@ const GET = requestHandler(async function (req) {
         },
       }),
     },
-    // take: dto.limit,
-    // skip: dto.limit * (dto.page - 1),
     orderBy: { createdAt: dto.orderBy },
     include: {
       users: true,
+      messages: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        include: {
+          receipts: {
+            where: {
+              userId: sessionUser.id,
+            },
+          },
+        },
+      },
     },
   });
 

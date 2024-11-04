@@ -1,7 +1,27 @@
+@import '@/styles/vars.scss';
+
 .signin_page {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+
+  .title {
+    margin-top: 50px;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 60px;
+    color: $black;
+    text-align: center;
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+  }
 }

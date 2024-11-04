@@ -10,14 +10,6 @@ const GET = requestHandler(async function (req) {
   const usersWithoutPrivateChat = await prisma.user.findMany({
     where: {
       NOT: { id: sessionUser.id },
-      chats: {
-        none: {
-          isGroup: false,
-          users: {
-            some: { id: sessionUser.id },
-          },
-        },
-      },
       ...(search && {
         username: {
           contains: search,

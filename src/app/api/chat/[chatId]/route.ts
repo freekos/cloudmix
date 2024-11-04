@@ -8,7 +8,7 @@ const DELETE = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;
-  const chatId = parseInt(params.chatId);
+  const chatId = params.chatId;
 
   const chat = await prisma.chat.findUnique({
     where: {
@@ -37,7 +37,7 @@ const GET = requestHandler(async (req, data) => {
   const { sessionUser } = await authorizeRequest(req);
 
   const params = await data.params;
-  const chatId = parseInt(params.chatId);
+  const chatId = params.chatId;
 
   const chat = await prisma.chat.findUnique({
     where: {

@@ -24,10 +24,12 @@
     "@mantine/core": "^7.13.4",
     "@mantine/hooks": "^7.13.4",
     "@prisma/client": "^5.21.1",
+    "aws-sdk": "^2.1691.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
     "cohere-ai": "^7.14.0",
+    "date-fns": "^4.1.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "next": "15.0.0",
@@ -44,6 +46,7 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",
@@ -68,9 +71,10 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.10",
     "prettier": "3.3.3",
-    "sass": "^1.80.5",
+    "sass": "1.77.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "uuid": "^11.0.2"
   },
   "lint-staged": {
     "./*/**/*.{js,jsx,ts,tsx}": [

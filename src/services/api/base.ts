@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 
 export const baseApi = axios.create({
   baseURL: '/api',
@@ -16,9 +16,9 @@ baseApi.interceptors.request.use(async (config) => {
 
 baseApi.interceptors.response.use(
   (response) => response.data,
-  (error) => {
-    if (error.response.status === 401) {
-      window.location.href = '/signin';
+  async (error) => {
+    if (error.response.status === 403) {
+      await signOut();
     }
     return Promise.reject(error);
   },

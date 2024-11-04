@@ -1,7 +1,9 @@
 export const env = {
+  AWS_REGION: process.env.AWS_REGION!,
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
   AWS_API_GATEWAY_ENDPOINT: process.env.AWS_API_GATEWAY_ENDPOINT!,
   AWS_DYNAMODB_ENDPOINT: process.env.AWS_DYNAMODB_ENDPOINT!,
-  AWS_REGION: process.env.AWS_REGION!,
   DATABASE_URL: process.env.DATABASE_URL!,
   REDIS_URL: process.env.REDIS_URL!,
   COHERE_API_KEY: process.env.COHERE_API_KEY!,

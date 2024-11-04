@@ -1,3 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 
-export const prisma = new PrismaClient();
+let prisma: PrismaClient;
+
+if (!(global as any).prisma) {
+  (global as any).prisma = new PrismaClient();
+}
+prisma = (global as any).prisma;
+
+export { prisma };

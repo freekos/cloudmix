@@ -1,8 +1,9 @@
-import { ChatModel, MessageModel, UserModel } from '@/types/models';
+import { TChatModel, TMessageModel, TUserModel } from '@/types/models';
 import { baseApi } from '../base';
 import {
   CreateChatDto,
   GetChatsDto,
+  GetChatsMessagesDto,
   GetUsersDto,
   UpdateMessageDto,
 } from './types';
@@ -10,17 +11,20 @@ import {
 class ChatApi {
   path = '/chat';
 
-  async createChat(data: CreateChatDto) {
+  async createChat(data: CreateChatDto): Promise<TChatModel> {
     return await baseApi.post(this.path, data);
   }
   async deleteChat(chatId: string) {
     return await baseApi.delete(`${this.path}/${chatId}`);
   }
-  async getChats(params: GetChatsDto): Promise<ChatModel[]> {
+  async getChats(params: GetChatsDto = {}): Promise<TChatModel[]> {
     return await baseApi.get(this.path, { params });
   }
-  async getChat(chatId: string): Promise<ChatModel> {
+  async getChat(chatId: string): Promise<TChatModel> {
     return await baseApi.get(`${this.path}/${chatId}`);
+  }
+  async getChatByUserId(userId: string): Promise<TChatModel> {
+    return await baseApi.get(`${this.path}/user/${userId}`);
   }
 
   async updateMessage(
@@ -36,11 +40,16 @@ class ChatApi {
   async deleteMessage(chatId: string, messageId: string) {
     return await baseApi.delete(`${this.path}/${chatId}/message/${messageId}`);
   }
-  async getMessages(chatId: string): Promise<MessageModel[]> {
+  async getMessages(chatId: string): Promise<TMessageModel[]> {
     return await baseApi.get(`${this.path}/${chatId}/message`);
   }
+  async getChatsMessages(
+    params: GetChatsMessagesDto = {},
+  ): Promise<TMessageModel[]> {
+    return await baseApi.get(`${this.path}/message`, { params });
+  }
 
-  async getUsers(params: GetUsersDto): Promise<UserModel[]> {
+  async getUsers(params: GetUsersDto = {}): Promise<TUserModel[]> {
     return await baseApi.get(`${this.path}/user`, { params });
   }
 }

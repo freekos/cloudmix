@@ -1,16 +1,21 @@
 import { MantineClientProvider } from '@/providers/MantineClientProvider';
-import { render } from '@testing-library/react';
+import { TextInputProps } from '@mantine/core';
+import { render, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { TextInput } from './TextInput';
 
 describe('TextInput', () => {
-  const getComponent = () => <TextInput />;
-
-  it('render without crash', () => {
-    render(getComponent(), {
+  const renderComponent = (props: TextInputProps = { onChange: () => {} }) => {
+    render(<TextInput data-testid="text-input" {...props} />, {
       wrapper: ({ children }: PropsWithChildren) => {
         return <MantineClientProvider>{children}</MantineClientProvider>;
       },
     });
+  };
+
+  it('should render correctly', async () => {
+    renderComponent();
+
+    expect(screen.getByTestId('text-input')).toBeInTheDocument();
   });
 });

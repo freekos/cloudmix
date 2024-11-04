@@ -1,15 +1,22 @@
 ## Getting Started
 
-First, run the development server:
+Clone the repository:
 
 ```bash
-npm run dev
-# or
+git clone https://github.com/gazizbolat/zimran-test.git
+cd zimran-test
+```
+
+Install dependencies:
+
+```bash
+yarn
+```
+
+Run the development server:
+
+```bash
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Исправленный текст:

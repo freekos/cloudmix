@@ -1,26 +1,36 @@
+import { MessageStatus } from '@/constants/messageStatus';
+import { getStatusText } from '@/helpers/getStatusText';
+import { TMessageModel } from '@/types/models';
 import clsx from 'clsx';
-import { ComponentProps } from 'react';
+import { format } from 'date-fns';
+import { ComponentPropsWithoutRef } from 'react';
 import styles from './ChatItem.module.scss';
 
-interface ChatItemProps extends Omit<ComponentProps<'button'>, 'children'> {
-  name: string;
-  newMessageCount?: number;
-  lastMessage?: string;
-  lastMessageTime?: string;
-  isActive?: boolean;
+interface ChatItemProps extends ComponentPropsWithoutRef<'button'> {
+  isMine?: boolean;
+  userNames: string[];
+  message?: Pick<TMessageModel, 'content' | 'createdAt'>;
+  messagesCount: number;
+  status?: MessageStatus;
+  isActive: boolean;
   isTyping?: boolean;
 }
 
 export const ChatItem = ({
   className,
-  name,
-  newMessageCount,
-  lastMessage,
-  lastMessageTime,
-  isActive = false,
-  isTyping = false,
+  isMine,
+  userNames,
+  message,
+  messagesCount,
+  status,
+  isActive,
+  isTyping,
   ...props
 }: ChatItemProps) => {
+  const getTimeText = (date: string) => {
+    return format(date, 'HH:mm');
+  };
+
   return (
     <button
       className={clsx(styles.chat_item, className)}
@@ -28,24 +38,31 @@ export const ChatItem = ({
       {...props}
     >
       <div className={styles.top}>
-        <span className={styles.sender}>{name}</span>
-        {newMessageCount && (
-          <span className={styles.new_message_count}>{newMessageCount}</span>
+        <span className={styles.username}>{userNames.join(', ')}</span>
+        {isTyping && isMine ? null : isMine ? (
+          <span data-testid="status">{getStatusText(status)}</span>
+        ) : (
+          messagesCount > 0 && (
+            <span
+              className={styles.messages_count}
+              data-testid="messages_count"
+            >
+              {messagesCount}
+            </span>
+          )
         )}
       </div>
       <div className={styles.bottom}>
         {isTyping ? (
           <span className={styles.typing}>...typing</span>
-        ) : (
+        ) : message ? (
           <>
-            {lastMessage && (
-              <span className={styles.message}>{lastMessage}</span>
-            )}
-            {lastMessageTime && (
-              <span className={styles.time}>{lastMessageTime}</span>
-            )}
+            <span className={styles.message}>{message.content}</span>
+            <span className={styles.time}>
+              {getTimeText(message.createdAt)}
+            </span>
           </>
-        )}
+        ) : null}
       </div>
     </button>
   );

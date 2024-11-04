@@ -1,35 +1,40 @@
-export interface BaseModel {
+import { MessageStatus } from '@/constants/messageStatus';
+
+export interface TBaseModel {
   id: string;
   createdAt: string;
-  updatedAt?: string;
+  updatedAt: string;
 }
 
-export interface UserModel extends BaseModel {
+export interface TUserModel extends TBaseModel {
   username: string;
-  chats?: ChatModel[];
-  messages: MessageModel[];
-  readReceipts: ReadReceiptModel[];
+  chats: TChatModel[];
+  messages: TMessageModel[];
+  receipts: TMessageReceiptModel[];
 }
 
-export interface ChatModel extends BaseModel {
+export interface TChatModel extends TBaseModel {
   isGroup: boolean;
-  name?: string;
-  messages: MessageModel[];
-  users: UserModel[];
+  name: string;
+  messages: TMessageModel[];
+  users: TUserModel[];
 }
 
-export interface MessageModel extends BaseModel {
+export interface TMessageModel extends TBaseModel {
   content: string;
-  senderId: number;
-  chatId: number;
-  replyToId?: number;
-  sender: UserModel;
-  chat: ChatModel;
-  replyTo?: MessageModel;
-  replies: MessageModel[];
+  senderId: string;
+  chatId: string;
+  replyToId?: string;
+  sender: TUserModel;
+  chat: TChatModel;
+  replyTo: TMessageModel;
+  replies: TMessageModel[];
+  receipts: TMessageReceiptModel[];
 }
 
-export interface ReadReceiptModel extends BaseModel {
-  messageId: number;
-  userId: number;
+export interface TMessageReceiptModel extends TBaseModel {
+  messageId: string;
+  userId: string;
+  timestamp: string;
+  status: MessageStatus;
 }

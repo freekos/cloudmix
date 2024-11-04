@@ -16,6 +16,7 @@
   transform: translateY(calc(-100% - $main-header-height));
   transition: transform 0.3s ease-in-out;
   overflow-y: scroll;
+  scrollbar-width: none;
 
   &[data-visible='true'] {
     transform: translateY(0);
@@ -68,7 +69,7 @@
     width: 100%;
   }
   .search_input {
-    border-radius: 7px !important;
+    // border-radius: 7px !important;
     &:focus {
       border-width: 2px !important;
     }
