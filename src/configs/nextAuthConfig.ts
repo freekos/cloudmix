@@ -1,7 +1,7 @@
 import { AuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { userAgentFromString } from 'next/server';
-import { login } from '../app/api/auth/service';
+import { login } from '../app/api/auth/auth.service';
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -17,11 +17,9 @@ export const authOptions: AuthOptions = {
         }
 
         const userAgent = userAgentFromString(req.headers!['user-agent']);
-        const response = await login(userAgent, credentials);
+        const session = await login(credentials, userAgent);
 
-        const user = await response.json();
-
-        return user;
+        return session as unknown as User;
       },
     }),
   ],

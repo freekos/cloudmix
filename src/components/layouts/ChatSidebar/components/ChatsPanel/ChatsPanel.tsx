@@ -4,6 +4,7 @@ import { EmptyMessage } from '@/components/atoms/EmptyMessage';
 import { Loader } from '@/components/atoms/Loader';
 import { SearchInput } from '@/components/atoms/SearchInput';
 import { ChatItem } from '@/components/molecules/ChatItem';
+import { getMessageStatus } from '@/helpers/getMessageStatus';
 import { useChats } from '@/hooks/useChats';
 import { useMessages } from '@/providers/MesagesProvider';
 import { useWebsocket } from '@/providers/WebsocketProvider';
@@ -111,7 +112,8 @@ export const ChatsPanel = () => {
                 key={chat.id}
                 userNames={chat.userNames}
                 messagesCount={chat.messagesCount}
-                message={chat.messages![0]}
+                message={chat.messages[0]}
+                status={getMessageStatus(chat.messages[0])}
                 isActive={chatId === chat.id}
                 isTyping={chat.isTyping}
                 onClick={handleChatClick(chat)}

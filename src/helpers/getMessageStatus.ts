@@ -4,8 +4,12 @@ import { TTemporaryMessage } from '@/types/temporaryMessage';
 import { isMessageModel } from './isMessageModel';
 
 export function getMessageStatus(
-  message: TMessageModel | TTemporaryMessage,
-): MessageStatus {
+  message: TMessageModel | TTemporaryMessage | undefined,
+): MessageStatus | undefined {
+  if (!message) {
+    return;
+  }
+
   if (
     !isMessageModel(message) ||
     !message.receipts ||

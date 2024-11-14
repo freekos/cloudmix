@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { authorizeRequest } from '../../auth/service';
+import { authorizeRequest } from '../../auth/auth.service';
 import { RequestError } from '../../helpers/requestError';
 import { requestHandler } from '../../helpers/requestHandler';
 import { prisma } from '../../lib/prisma';

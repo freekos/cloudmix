@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { BotTypes } from '../constants/botTypes';
+import { BotType } from '../constants/botType';
 
 export const botDto = z.object({
-  type: z.nativeEnum(BotTypes),
+  type: z.nativeEnum(BotType),
   message: z.string(),
 });

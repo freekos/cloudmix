@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { authorizeRequest } from '../auth/service';
-import { BotTypes } from '../constants/botTypes';
+import { authorizeRequest } from '../auth/auth.service';
+import { BotType } from '../constants/botType';
 import { getBody } from '../helpers/getBody';
 import { requestHandler } from '../helpers/requestHandler';
+import { coherePrompt, openaiPrompt } from './bot.service';
 import { botDto } from './dto';
-import { coherePrompt, openaiPrompt } from './service';
 
 const POST = requestHandler(async (req) => {
   await authorizeRequest(req);
@@ -12,9 +12,9 @@ const POST = requestHandler(async (req) => {
   const dto = await botDto.parseAsync(body);
 
   switch (dto.type) {
-    case BotTypes.OPENAI:
+    case BotType.OPENAI:
       return openaiPrompt(dto.message);
-    case BotTypes.COHERE:
+    case BotType.COHERE:
       return coherePrompt(dto.message);
     default:
       return NextResponse.json({ error: 'Invalid bot type' }, { status: 400 });

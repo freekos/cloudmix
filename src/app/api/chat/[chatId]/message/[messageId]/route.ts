@@ -1,74 +1,33 @@
-import { authorizeRequest } from '@/app/api/auth/service';
+import { authorizeRequest } from '@/app/api/auth/auth.service';
 import { getBody } from '@/app/api/helpers/getBody';
-import { RequestError } from '@/app/api/helpers/requestError';
 import { requestHandler } from '@/app/api/helpers/requestHandler';
-import { prisma } from '@/app/api/lib/prisma';
 import { NextResponse } from 'next/server';
-import { updateMessageDto } from './dto';
+import { updateMessageDto } from '../../dto';
+import { deleteMessage, updateMessage } from '../../message.service';
 
 const PATCH = requestHandler(async (req, data) => {
-  const { sessionUser } = await authorizeRequest(req);
+  await authorizeRequest(req);
+
+  const params = await data.params;
+  const messageId = params.messageId;
 
   const body = await getBody(req.body);
   const dto = await updateMessageDto.parseAsync(body);
 
-  const params = await data.params;
-  const chatId = params.chatId;
-  const messageId = params.messageId;
-  console.log(chatId, messageId);
+  const updatedMessage = await updateMessage(dto, messageId);
 
-  const message = await prisma.message.findUnique({
-    where: {
-      id: messageId,
-      chatId,
-      senderId: sessionUser.id,
-    },
-  });
-  if (!message) {
-    throw new RequestError('Message not found', 404);
-  }
-
-  await prisma.message.update({
-    where: {
-      id: messageId,
-      chatId,
-      senderId: sessionUser.id,
-    },
-    data: {
-      content: dto.content,
-    },
-  });
-
-  return NextResponse.json(null, { status: 200 });
+  return NextResponse.json(updatedMessage, { status: 200 });
 });
 
 const DELETE = requestHandler(async (req, data) => {
-  const { sessionUser } = await authorizeRequest(req);
+  await authorizeRequest(req);
 
   const params = await data.params;
-  const chatId = params.chatId;
   const messageId = params.messageId;
 
-  const message = await prisma.message.findUnique({
-    where: {
-      id: messageId,
-      chatId,
-      senderId: sessionUser.id,
-    },
-  });
-  if (!message) {
-    throw new RequestError('Message not found', 404);
-  }
+  const deletedMessage = await deleteMessage(messageId);
 
-  await prisma.message.delete({
-    where: {
-      id: messageId,
-      chatId,
-      senderId: sessionUser.id,
-    },
-  });
-
-  return NextResponse.json(null, { status: 200 });
+  return NextResponse.json(deletedMessage, { status: 200 });
 });
 
 export { DELETE, PATCH };

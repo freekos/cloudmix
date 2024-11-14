@@ -1,4 +1,4 @@
-export enum BotTypes {
+export enum BotType {
   OPENAI = 'OPENAI',
   COHERE = 'COHERE',
 }

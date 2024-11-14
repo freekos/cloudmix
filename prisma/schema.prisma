@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,7 +6,14 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+enum BotType {
+  openai
+  cohere
+}
+enum ChatType {
+  private
+  group
+}
 enum MessageStatus {
   sent
   delivered
@@ -25,7 +26,10 @@ model User {
   updatedAt DateTime? @updatedAt
 
   username String @unique
-  password String
+  password String?
+  isBot Boolean @default(false)
+  botType BotType?
+
   chats Chat[] @relation("UserChats")
   messages Message[] @relation("UserMessages")
   receipts MessageReceipt[]
@@ -36,8 +40,9 @@ model Chat {
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
 
-  isGroup Boolean @default(false)
+  type ChatType @default(private)
   name String?
+
   messages Message[] @relation("ChatMessages")
   users User[] @relation("UserChats")
 }
@@ -50,22 +55,20 @@ model Message {
   content String
   senderId String
   chatId String
-  replyToId String?
+
   sender User @relation("UserMessages", fields: [senderId], references: [id])
   chat Chat @relation("ChatMessages", fields: [chatId], references: [id])
-  replyTo Message? @relation("MessageReplies", fields: [replyToId], references: [id])
-  replies Message[] @relation("MessageReplies")
-  receipts  MessageReceipt[]
+  receipts MessageReceipt[] 
 }
 
 model MessageReceipt {
   id String @id @default(uuid())
-  messageId String
-  userId String
   timestamp DateTime @default(now())
-  status MessageStatus @default(sent)
+  status MessageStatus
+  userId String
+  messageId String
 
-  message Message @relation(fields: [messageId], references: [id])
   user User @relation(fields: [userId], references: [id])
+  message Message @relation(fields: [messageId], references: [id])
   @@unique([messageId, userId])
 }

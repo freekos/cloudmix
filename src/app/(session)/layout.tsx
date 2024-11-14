@@ -1,6 +1,6 @@
 import { getSession } from '@/helpers/getSession';
 import { SessionClientProvider } from '@/providers/SessionClientProvider';
-import { WebsocketProvider } from '@/providers/WebsocketProvider/WebsocketProvider';
+import { WebsocketProvider } from '@/providers/WebsocketProvider';
 import { PropsWithChildren } from 'react';
 
 export default async function SessionLayout({ children }: PropsWithChildren) {

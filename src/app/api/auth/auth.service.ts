@@ -1,12 +1,13 @@
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { env } from '../configs/env';
 import { getHashedPassword } from '../helpers/getHashedPassword';
 import { RequestError } from '../helpers/requestError';
 import { prisma } from '../lib/prisma';
 import { redis } from '../lib/redis';
+import { UserAgent } from '../types/userAgent';
 import { LoginDto } from './login/dto';
 import { RefreshTokenDto } from './refresh-token/dto';
 import { RegisterDto } from './register/dto';
@@ -22,43 +23,48 @@ export async function register(dto: RegisterDto) {
   }
 
   const hashedPassword = await getHashedPassword(dto.password);
-  await prisma.user.create({
+  const createdUser = await prisma.user.create({
     data: {
       username: dto.username,
       password: hashedPassword,
-      updatedAt: null,
     },
   });
 
-  return NextResponse.json(null, { status: 201 });
+  return createdUser;
 }
 
-export async function login(userAgent: any, dto: LoginDto) {
-  const user = await prisma.user.findUnique({
+export async function login(dto: LoginDto, userAgent: UserAgent) {
+  const existingUser = await prisma.user.findUnique({
     where: {
       username: dto.username,
     },
   });
-  if (!user) {
+  if (!existingUser) {
     throw new RequestError('User not found', 400);
   }
 
-  const isPasswordCorrect = await bcrypt.compare(dto.password, user.password);
+  const isPasswordCorrect = await bcrypt.compare(
+    dto.password,
+    existingUser.password,
+  );
   if (!isPasswordCorrect) {
     throw new RequestError('Invalid password', 400);
   }
 
-  const { refreshToken, accessToken } = await createSession(userAgent, user.id);
-
-  return NextResponse.json(
-    { refreshToken, accessToken, user },
-    { status: 200 },
+  const { refreshToken, accessToken } = await createSession(
+    existingUser.id,
+    userAgent,
   );
+
+  return { refreshToken, accessToken, user: existingUser };
 }
 
-export async function refreshTokens(req: NextRequest, dto: RefreshTokenDto) {
-  const decodedToken = jwt.verify(dto.refreshToken, env.JWT_SECRET);
-  if (!decodedToken.sub) {
+export async function refreshTokens(
+  dto: RefreshTokenDto,
+  userAgent: UserAgent,
+) {
+  const decodedToken = await decodeToken(dto.refreshToken);
+  if (!decodedToken || !decodedToken.sub) {
     throw new RequestError('Token is not valid', 400);
   }
   const userId = decodedToken.sub as string;
@@ -68,17 +74,15 @@ export async function refreshTokens(req: NextRequest, dto: RefreshTokenDto) {
     throw new RequestError('Token is not valid', 401);
   }
 
-  await deleteSession(userId);
+  const { refreshToken, accessToken } = await createSession(userId, userAgent);
 
-  const { refreshToken, accessToken } = await createSession(req, userId);
-
-  return NextResponse.json({ refreshToken, accessToken }, { status: 200 });
+  return { refreshToken, accessToken };
 }
 
 export async function logout(sessionUser: User) {
   await deleteSession(sessionUser.id);
 
-  return NextResponse.json(null, { status: 200 });
+  return null;
 }
 
 export async function authorizeRequest(req: NextRequest) {
@@ -90,19 +94,12 @@ export async function authorizeRequest(req: NextRequest) {
 
   const token = authHeader.split(' ')[1];
 
-  return await authorizeByToken(token);
+  return authorizeByToken(token);
 }
 
 export async function authorizeByToken(token: string) {
-  let decodedToken: JwtPayload | string;
-
-  try {
-    decodedToken = jwt.verify(token, env.JWT_SECRET);
-  } catch {
-    throw new RequestError('Invalid or expired token', 403);
-  }
-
-  if (!decodedToken.sub) {
+  let decodedToken = await decodeToken(token);
+  if (!decodedToken || !decodedToken.sub) {
     throw new RequestError('Invalid or expired token', 403);
   }
   const userId = decodedToken.sub as string;
@@ -124,14 +121,13 @@ export async function authorizeByToken(token: string) {
   return { sessionUser, token };
 }
 
-async function createSession(userAgent: any, userId: string) {
+async function createSession(userId: string, userAgent: UserAgent) {
   const session = await getSession(userId);
   if (session) {
     await deleteSession(userId);
   }
 
   const { accessToken, refreshToken } = generateTokens(userId);
-  const { device, os, browser } = userAgent;
 
   await redis.set(
     getSessionAccessKey(userId),
@@ -145,11 +141,7 @@ async function createSession(userAgent: any, userId: string) {
     'EX',
     env.REFRESH_TOKEN_EXPIRY,
   );
-  await redis.hmset(getSessionMetaKey(userId), {
-    device,
-    os,
-    browser,
-  });
+  await redis.hmset(getSessionMetaKey(userId), userAgent);
 
   return { refreshToken, accessToken };
 }
@@ -166,6 +158,14 @@ async function getSession(userId: string) {
   const meta = await redis.hgetall(getSessionMetaKey(userId));
 
   return { accessToken, refreshToken, meta };
+}
+
+async function decodeToken(token: string): Promise<JwtPayload | string | null> {
+  try {
+    return jwt.verify(token, env.JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
 }
 
 function generateTokens(userId: string) {
